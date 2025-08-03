@@ -167,7 +167,7 @@ def classify_audio_clip(clip, model_dir):
         kernel_size=5,
         distribute_zero_label=False,
     )
-    classifier.load_state_dict(torch.load(os.path.join(model_dir, "classifier.pth"), map_location=torch.device("cpu")))
+    classifier.load_state_dict(torch.load(os.path.join(model_dir, "classifier.pth", weights_only=False), map_location=torch.device("cpu")))
     clip = clip.cpu().unsqueeze(0)
     results = F.softmax(classifier(clip), dim=-1)
     return results[0][0]
@@ -483,14 +483,14 @@ class Tortoise(BaseTTS):
             self.rlg_auto = RandomLatentConverter(1024).eval()
             self.rlg_auto.load_state_dict(
                 torch.load(
-                    os.path.join(self.models_dir, "rlg_auto.pth"),
+                    os.path.join(self.models_dir, "rlg_auto.pth", weights_only=False),
                     map_location=torch.device("cpu"),
                 )
             )
             self.rlg_diffusion = RandomLatentConverter(2048).eval()
             self.rlg_diffusion.load_state_dict(
                 torch.load(
-                    os.path.join(self.models_dir, "rlg_diffuser.pth"),
+                    os.path.join(self.models_dir, "rlg_diffuser.pth", weights_only=False),
                     map_location=torch.device("cpu"),
                 )
             )
@@ -878,24 +878,24 @@ class Tortoise(BaseTTS):
 
         if os.path.exists(ar_path):
             # remove keys from the checkpoint that are not in the model
-            checkpoint = torch.load(ar_path, map_location=torch.device("cpu"))
+            checkpoint = torch.load(ar_path, map_location=torch.device("cpu", weights_only=False))
 
             # strict set False
             # due to removed `bias` and `masked_bias` changes in Transformers
             self.autoregressive.load_state_dict(checkpoint, strict=False)
 
         if os.path.exists(diff_path):
-            self.diffusion.load_state_dict(torch.load(diff_path), strict=strict)
+            self.diffusion.load_state_dict(torch.load(diff_path, weights_only=False), strict=strict)
 
         if os.path.exists(clvp_path):
-            self.clvp.load_state_dict(torch.load(clvp_path), strict=strict)
+            self.clvp.load_state_dict(torch.load(clvp_path, weights_only=False), strict=strict)
 
         if os.path.exists(vocoder_checkpoint_path):
             self.vocoder.load_state_dict(
                 config.model_args.vocoder.value.optionally_index(
                     torch.load(
                         vocoder_checkpoint_path,
-                        map_location=torch.device("cpu"),
+                        map_location=torch.device("cpu", weights_only=False),
                     )
                 )
             )

@@ -104,7 +104,7 @@ class NeuralhmmTTS(BaseTTS):
 
     def preprocess_batch(self, text, text_len, mels, mel_len):
         if self.mean.item() == 0 or self.std.item() == 1:
-            statistics_dict = torch.load(self.mel_statistics_parameter_path)
+            statistics_dict = torch.load(self.mel_statistics_parameter_path, weights_only=False)
             self.update_mean_std(statistics_dict)
 
         mels = self.normalize(mels)
@@ -286,7 +286,7 @@ class NeuralhmmTTS(BaseTTS):
             print(
                 f" | > Data parameters found for: {trainer.config.mel_statistics_parameter_path}. Loading mel normalization parameters..."
             )
-            statistics = torch.load(trainer.config.mel_statistics_parameter_path)
+            statistics = torch.load(trainer.config.mel_statistics_parameter_path, weights_only=False)
             data_mean, data_std, init_transition_prob = (
                 statistics["mean"],
                 statistics["std"],

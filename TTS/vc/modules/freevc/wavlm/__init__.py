@@ -23,7 +23,7 @@ def get_wavlm(device="cpu"):
         print(f" > Downloading WavLM model to {output_path} ...")
         urllib.request.urlretrieve(model_uri, output_path)
 
-    checkpoint = torch.load(output_path, map_location=torch.device(device))
+    checkpoint = torch.load(output_path, map_location=torch.device(device, weights_only=False))
     cfg = WavLMConfig(checkpoint["cfg"])
     wavlm = WavLM(cfg).to(device)
     wavlm.load_state_dict(checkpoint["model"])

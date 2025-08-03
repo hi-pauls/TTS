@@ -333,7 +333,7 @@ class TorchMelSpectrogram(nn.Module):
         self.mel_norm_file = mel_norm_file
         if self.mel_norm_file is not None:
             with fsspec.open(self.mel_norm_file) as f:
-                self.mel_norms = torch.load(f)
+                self.mel_norms = torch.load(f, weights_only=False)
         else:
             self.mel_norms = None
 
